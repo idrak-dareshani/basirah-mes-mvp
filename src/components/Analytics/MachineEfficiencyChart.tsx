@@ -6,12 +6,29 @@ interface MachineEfficiencyChartProps {
   machines: Machine[];
 }
 
-export default function MachineEfficiencyChart({ machines }: MachineEfficiencyChartProps) {
-  const chartData = machines.map(machine => ({
-    name: machine.name,
-    efficiency: machine.efficiency,
-    status: machine.status,
+// Mock data for demonstration
+const generateMockMachineData = () => {
+  const machineNames = [
+    'CNC Mill #1', 'CNC Mill #2', 'Lathe #1', 'Press #1', 
+    'Grinder #1', 'Welder #1', 'Assembly #1', 'Packaging #1'
+  ];
+  
+  return machineNames.map(name => ({
+    name,
+    efficiency: Math.floor(Math.random() * 30) + 70, // 70-100% efficiency
+    status: ['running', 'idle', 'maintenance', 'error'][Math.floor(Math.random() * 4)],
   })).sort((a, b) => b.efficiency - a.efficiency);
+};
+
+export default function MachineEfficiencyChart({ machines }: MachineEfficiencyChartProps) {
+  // Use real data if available, otherwise use mock data
+  const chartData = machines.length > 0 
+    ? machines.map(machine => ({
+        name: machine.name,
+        efficiency: machine.efficiency,
+        status: machine.status,
+      })).sort((a, b) => b.efficiency - a.efficiency)
+    : generateMockMachineData();
 
   const getBarColor = (status: string, efficiency: number) => {
     if (status === 'error') return '#ef4444';
@@ -35,8 +52,8 @@ export default function MachineEfficiencyChart({ machines }: MachineEfficiencyCh
     return null;
   };
 
-  const averageEfficiency = machines.length > 0 
-    ? Math.round(machines.reduce((sum, m) => sum + m.efficiency, 0) / machines.length)
+  const averageEfficiency = chartData.length > 0 
+    ? Math.round(chartData.reduce((sum, m) => sum + m.efficiency, 0) / chartData.length)
     : 0;
 
   return (
@@ -89,13 +106,13 @@ export default function MachineEfficiencyChart({ machines }: MachineEfficiencyCh
         </div>
         <div className="text-center">
           <p className="text-2xl font-bold text-green-600">
-            {machines.filter(m => m.efficiency >= 90).length}
+            {chartData.filter(m => m.efficiency >= 90).length}
           </p>
           <p className="text-sm text-gray-600">High Performers</p>
         </div>
         <div className="text-center">
           <p className="text-2xl font-bold text-red-600">
-            {machines.filter(m => m.efficiency < 75).length}
+            {chartData.filter(m => m.efficiency < 75).length}
           </p>
           <p className="text-sm text-gray-600">Need Attention</p>
         </div>

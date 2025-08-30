@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { WorkOrder } from '../../types';
-import { format, eachDayOfInterval, startOfDay } from 'date-fns';
+import { format, eachDayOfInterval, startOfDay, subDays } from 'date-fns';
 
 interface ProductionChartProps {
   workOrders: WorkOrder[];
@@ -10,35 +10,27 @@ interface ProductionChartProps {
   endDate: Date;
 }
 
-export default function ProductionChart({ workOrders, dateRange, startDate, endDate }: ProductionChartProps) {
-  const chartData = useMemo(() => {
-    // Generate all days in the range
-    const days = eachDayOfInterval({ start: startDate, end: endDate });
+// Mock data for demonstration
+const generateMockData = (startDate: Date, endDate: Date, dateRange: string) => {
+  const days = eachDayOfInterval({ start: startDate, end: endDate });
+  
+  return days.map(day => {
+    const planned = Math.floor(Math.random() * 50) + 100;
+    const actual = Math.floor(Math.random() * 40) + planned - 20;
     
-    // Group work orders by day
-    const dataByDay = days.map(day => {
-      const dayStart = startOfDay(day);
-      const dayOrders = workOrders.filter(wo => {
-        const orderDate = startOfDay(new Date(wo.created_at));
-        return orderDate.getTime() === dayStart.getTime();
-      });
+    return {
+      date: format(day, dateRange === '7d' ? 'MMM dd' : 'MM/dd'),
+      fullDate: format(day, 'yyyy-MM-dd'),
+      planned: Math.max(planned, 0),
+      actual: Math.max(actual, 0),
+      orders: Math.floor(Math.random() * 5) + 3,
+      efficiency: planned > 0 ? Math.round((actual / planned) * 100) : 0,
+    };
+  });
+};
 
-      const planned = dayOrders.reduce((sum, wo) => sum + wo.quantity_planned, 0);
-      const completed = dayOrders.reduce((sum, wo) => sum + wo.quantity_completed, 0);
-      const orders = dayOrders.length;
-
-      return {
-        date: format(day, dateRange === '7d' ? 'MMM dd' : 'MM/dd'),
-        fullDate: format(day, 'yyyy-MM-dd'),
-        planned,
-        completed,
-        orders,
-        efficiency: planned > 0 ? Math.round((completed / planned) * 100) : 0,
-      };
-    });
-
-    return dataByDay;
-  }, [workOrders, startDate, endDate, dateRange]);
+export default function ProductionChart({ workOrders, dateRange, startDate, endDate }: ProductionChartProps) {
+  const chartData = generateMockData(startDate, endDate, dateRange);
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -90,9 +82,9 @@ export default function ProductionChart({ workOrders, dateRange, startDate, endD
               radius={[2, 2, 0, 0]}
             />
             <Bar 
-              dataKey="completed" 
+              dataKey="actual" 
               fill="#2563eb" 
-              name="Completed"
+              name="Actual"
               radius={[2, 2, 0, 0]}
             />
           </BarChart>
@@ -108,7 +100,7 @@ export default function ProductionChart({ workOrders, dateRange, startDate, endD
         </div>
         <div className="text-center">
           <p className="text-2xl font-bold text-green-600">
-            {chartData.reduce((sum, day) => sum + day.completed, 0).toLocaleString()}
+            {chartData.reduce((sum, day) => sum + day.actual, 0).toLocaleString()}
           </p>
           <p className="text-sm text-gray-600">Total Completed</p>
         </div>

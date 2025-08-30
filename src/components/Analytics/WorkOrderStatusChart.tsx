@@ -20,18 +20,33 @@ const statusLabels = {
   on_hold: 'On Hold',
 };
 
-export default function WorkOrderStatusChart({ workOrders }: WorkOrderStatusChartProps) {
-  const statusCounts = workOrders.reduce((acc, wo) => {
-    acc[wo.status] = (acc[wo.status] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+// Mock data for demonstration
+const generateMockStatusData = () => {
+  return [
+    { name: 'Completed', value: 45, color: '#10b981', percentage: 45 },
+    { name: 'In Progress', value: 30, color: '#3b82f6', percentage: 30 },
+    { name: 'Pending', value: 20, color: '#f59e0b', percentage: 20 },
+    { name: 'On Hold', value: 5, color: '#ef4444', percentage: 5 },
+  ];
+};
 
-  const chartData = Object.entries(statusCounts).map(([status, count]) => ({
-    name: statusLabels[status as keyof typeof statusLabels] || status,
-    value: count,
-    color: statusColors[status as keyof typeof statusColors] || '#6b7280',
-    percentage: Math.round((count / workOrders.length) * 100),
-  }));
+export default function WorkOrderStatusChart({ workOrders }: WorkOrderStatusChartProps) {
+  // Use real data if available, otherwise use mock data
+  const chartData = workOrders.length > 0 
+    ? (() => {
+        const statusCounts = workOrders.reduce((acc, wo) => {
+          acc[wo.status] = (acc[wo.status] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>);
+
+        return Object.entries(statusCounts).map(([status, count]) => ({
+          name: statusLabels[status as keyof typeof statusLabels] || status,
+          value: count,
+          color: statusColors[status as keyof typeof statusColors] || '#6b7280',
+          percentage: Math.round((count / workOrders.length) * 100),
+        }));
+      })()
+    : generateMockStatusData();
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -69,6 +84,10 @@ export default function WorkOrderStatusChart({ workOrders }: WorkOrderStatusChar
       </text>
     );
   };
+
+  const totalOrders = chartData.reduce((sum, item) => sum + item.value, 0);
+  const completedOrders = chartData.find(item => item.name === 'Completed')?.value || 0;
+  const completionRate = totalOrders > 0 ? Math.round((completedOrders / totalOrders) * 100) : 0;
 
   return (
     <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
@@ -110,13 +129,11 @@ export default function WorkOrderStatusChart({ workOrders }: WorkOrderStatusChar
 
       <div className="mt-4 grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
         <div className="text-center">
-          <p className="text-2xl font-bold text-blue-600">{workOrders.length}</p>
+          <p className="text-2xl font-bold text-blue-600">{totalOrders}</p>
           <p className="text-sm text-gray-600">Total Orders</p>
         </div>
         <div className="text-center">
-          <p className="text-2xl font-bold text-green-600">
-            {Math.round(((statusCounts.completed || 0) / workOrders.length) * 100)}%
-          </p>
+          <p className="text-2xl font-bold text-green-600">{completionRate}%</p>
           <p className="text-sm text-gray-600">Completion Rate</p>
         </div>
       </div>

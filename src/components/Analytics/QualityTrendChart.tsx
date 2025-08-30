@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { QualityCheck } from '../../types';
 import { format, eachDayOfInterval, startOfDay } from 'date-fns';
@@ -10,38 +10,30 @@ interface QualityTrendChartProps {
   endDate: Date;
 }
 
+// Mock data for demonstration
+const generateMockQualityData = (startDate: Date, endDate: Date, dateRange: string) => {
+  const days = eachDayOfInterval({ start: startDate, end: endDate });
+  
+  return days.map(day => {
+    const total = Math.floor(Math.random() * 20) + 10;
+    const passRate = Math.floor(Math.random() * 20) + 80; // 80-100% pass rate
+    const passed = Math.round((total * passRate) / 100);
+    const failed = total - passed;
+
+    return {
+      date: format(day, dateRange === '7d' ? 'MMM dd' : 'MM/dd'),
+      fullDate: format(day, 'yyyy-MM-dd'),
+      total,
+      passed,
+      failed,
+      pending: Math.floor(Math.random() * 3),
+      passRate,
+    };
+  });
+};
+
 export default function QualityTrendChart({ qualityChecks, dateRange, startDate, endDate }: QualityTrendChartProps) {
-  const chartData = useMemo(() => {
-    // Generate all days in the range
-    const days = eachDayOfInterval({ start: startDate, end: endDate });
-    
-    // Group quality checks by day
-    const dataByDay = days.map(day => {
-      const dayStart = startOfDay(day);
-      const dayChecks = qualityChecks.filter(qc => {
-        const checkDate = startOfDay(new Date(qc.checked_at));
-        return checkDate.getTime() === dayStart.getTime();
-      });
-
-      const total = dayChecks.length;
-      const passed = dayChecks.filter(qc => qc.result === 'pass').length;
-      const failed = dayChecks.filter(qc => qc.result === 'fail').length;
-      const pending = dayChecks.filter(qc => qc.result === 'pending').length;
-      const passRate = total > 0 ? Math.round((passed / total) * 100) : 0;
-
-      return {
-        date: format(day, dateRange === '7d' ? 'MMM dd' : 'MM/dd'),
-        fullDate: format(day, 'yyyy-MM-dd'),
-        total,
-        passed,
-        failed,
-        pending,
-        passRate,
-      };
-    });
-
-    return dataByDay;
-  }, [qualityChecks, startDate, endDate, dateRange]);
+  const chartData = generateMockQualityData(startDate, endDate, dateRange);
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {

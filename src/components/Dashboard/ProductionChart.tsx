@@ -1,53 +1,34 @@
 import React from 'react';
 import { BarChart3 } from 'lucide-react';
-import { useWorkOrders } from '../../hooks/useWorkOrders';
+
+// Mock data for demonstration
+const generateMockHourlyData = () => {
+  const hourlyData = [];
+  const now = new Date();
+  
+  for (let i = 7; i >= 0; i--) {
+    const hour = new Date(now.getTime() - i * 60 * 60 * 1000);
+    const hourString = hour.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: false 
+    });
+    
+    const planned = Math.floor(Math.random() * 20) + 80;
+    const actual = Math.floor(Math.random() * 15) + planned - 10;
+    
+    hourlyData.push({
+      hour: hourString,
+      planned: Math.max(planned, 0),
+      actual: Math.max(actual, 0),
+    });
+  }
+  
+  return hourlyData;
+};
 
 export default function ProductionChart() {
-  const { workOrders } = useWorkOrders();
-
-  // Generate hourly data from work orders (last 8 hours)
-  const generateHourlyData = () => {
-    const now = new Date();
-    const hourlyData = [];
-    
-    for (let i = 7; i >= 0; i--) {
-      const hour = new Date(now.getTime() - i * 60 * 60 * 1000);
-      const hourString = hour.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: false 
-      });
-      
-      // Calculate planned and actual for this hour based on work orders
-      // This is a simplified calculation - in a real system, you'd have more granular data
-      const hourlyOrders = workOrders.filter(wo => {
-        const startHour = new Date(wo.start_date).getHours();
-        const currentHour = hour.getHours();
-        return Math.abs(startHour - currentHour) <= 1; // Orders within 1 hour
-      });
-      
-      const planned = hourlyOrders.reduce((sum, wo) => {
-        // Distribute planned quantity across working hours (simplified)
-        return sum + Math.round(wo.quantity_planned / 8);
-      }, 0) || Math.floor(Math.random() * 10) + 15; // Fallback to demo data
-      
-      const actual = hourlyOrders.reduce((sum, wo) => {
-        // Distribute completed quantity across working hours (simplified)
-        return sum + Math.round(wo.quantity_completed / 8);
-      }, 0) || Math.floor(Math.random() * 8) + planned - 5; // Fallback to demo data
-      
-      hourlyData.push({
-        hour: hourString,
-        planned: Math.max(planned, 0),
-        actual: Math.max(actual, 0),
-      });
-    }
-    
-    return hourlyData;
-  };
-
-  const hourlyData = generateHourlyData();
-
+  const hourlyData = generateMockHourlyData();
   const maxValue = Math.max(...hourlyData.map(d => Math.max(d.planned, d.actual)));
 
   return (
