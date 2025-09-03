@@ -2,7 +2,6 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Menu } from 'lucide-react';
 import { AlertProvider } from './context/AlertContext';
-import AlertDisplay from './components/UI/AlertDisplay';
 import Sidebar from './components/Layout/Sidebar';
 import Dashboard from './components/Dashboard/Dashboard';
 import WorkOrderList from './components/WorkOrders/WorkOrderList';
@@ -88,7 +87,6 @@ function App() {
           
           {renderContent()}
         </main>
-        <AlertDisplay />
       </div>
     </AlertProvider>
   );
