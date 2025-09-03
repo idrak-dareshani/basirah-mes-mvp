@@ -49,26 +49,33 @@ export default function Sidebar({ activeTab, onTabChange, isCollapsed, onToggle 
               <h1 className="text-xl font-bold text-blue-400">MES Control</h1>
               <p className="text-sm text-slate-400 mt-1">Manufacturing Execution System</p>
             </div>
-            {/* Desktop toggle button */}
+            {/* Mobile close button */}
             <button
               onClick={onToggle}
-              className="hidden lg:block p-2 rounded-lg hover:bg-slate-800 transition-colors"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-            <button
-              onClick={onToggle}
-              className="p-2 rounded-lg hover:bg-slate-800 transition-colors lg:hidden"
+              className="lg:hidden p-2 rounded-lg hover:bg-slate-800 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
           {isCollapsed && (
-            <div className="hidden lg:flex items-center justify-center">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <div className="hidden lg:flex items-center justify-center mt-4">
+              <button
+                onClick={onToggle}
+                className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors"
+                title="Expand sidebar"
+              >
                 <span className="text-sm font-bold">M</span>
-              </div>
+              </button>
             </div>
+          )}
+          {!isCollapsed && (
+            <button
+              onClick={onToggle}
+              className="hidden lg:block absolute top-4 right-4 p-2 rounded-lg hover:bg-slate-800 transition-colors"
+              title="Collapse sidebar"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
           )}
         </div>
       
