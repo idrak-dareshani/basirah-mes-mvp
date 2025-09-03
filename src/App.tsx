@@ -86,18 +86,6 @@ function App() {
             </button>
           </div>
           
-          {/* Desktop toggle button */}
-          <div className="hidden lg:block fixed top-4 left-4 z-30">
-            <button
-              onClick={toggleSidebar}
-              className={`p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all duration-300 shadow-sm ${
-                sidebarCollapsed ? 'translate-x-0' : 'translate-x-64'
-              }`}
-            >
-              <Menu className="w-5 h-5 text-gray-600" />
-            </button>
-          </div>
-          
           {renderContent()}
         </main>
         <AlertDisplay />
