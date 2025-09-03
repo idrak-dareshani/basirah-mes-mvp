@@ -74,7 +74,7 @@ function App() {
           onToggle={toggleSidebar}
         />
         <main className={`flex-1 overflow-auto transition-all duration-300 ${
-          sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-0'
+          sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
         }`}>
           {/* Mobile menu button */}
           <div className="lg:hidden bg-white border-b border-gray-200 p-4">
@@ -91,7 +91,7 @@ function App() {
             <button
               onClick={toggleSidebar}
               className={`p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all duration-300 shadow-sm ${
-                sidebarCollapsed ? 'translate-x-0' : 'translate-x-60'
+                sidebarCollapsed ? 'translate-x-0' : 'translate-x-64'
               }`}
             >
               <Menu className="w-5 h-5 text-gray-600" />
