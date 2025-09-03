@@ -43,20 +43,19 @@ export default function Sidebar({ activeTab, onTabChange, isCollapsed, onToggle 
         isCollapsed ? '-translate-x-full lg:translate-x-0 lg:w-16' : 'translate-x-0 w-64'
       } fixed lg:relative inset-y-0 left-0 z-50 bg-slate-900 text-white h-full flex flex-col transition-all duration-300 ease-in-out`}>
         
-        {/* Desktop toggle button */}
-        <button
-          onClick={onToggle}
-          className="hidden lg:block absolute top-4 -right-4 z-10 p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
-        >
-          <Menu className="w-5 h-5 text-gray-600" />
-        </button>
-        
         <div className={`${isCollapsed ? 'lg:p-3' : 'p-6'} border-b border-slate-700 transition-all duration-300`}>
           <div className="flex items-center justify-between">
             <div className={`${isCollapsed ? 'lg:hidden' : ''}`}>
               <h1 className="text-xl font-bold text-blue-400">MES Control</h1>
               <p className="text-sm text-slate-400 mt-1">Manufacturing Execution System</p>
             </div>
+            {/* Desktop toggle button */}
+            <button
+              onClick={onToggle}
+              className="hidden lg:block p-2 rounded-lg hover:bg-slate-800 transition-colors"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
             <button
               onClick={onToggle}
               className="p-2 rounded-lg hover:bg-slate-800 transition-colors lg:hidden"

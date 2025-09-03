@@ -74,7 +74,7 @@ function App() {
           onToggle={toggleSidebar}
         />
         <main className={`flex-1 overflow-auto transition-all duration-300 ${
-          sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
+          sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-0'
         }`}>
           {/* Mobile menu button */}
           <div className="lg:hidden bg-white border-b border-gray-200 p-4">
