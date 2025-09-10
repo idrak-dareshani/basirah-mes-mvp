@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Search, Filter, Cog, Circle, Edit, Trash2, Loader2, AlertTriangle } from 'lucide-react';
 import { Machine } from '../../types';
 import { useMachines } from '../../hooks/useMachines';
+import { useWorkOrders } from '../../hooks/useWorkOrders';
 import Modal from '../UI/Modal';
 import MachineForm from './MachineForm';
 
@@ -14,12 +15,15 @@ const statusConfig = {
 
 export default function MachineList() {
   const { machines, loading, error, createMachine, updateMachine, deleteMachine } = useMachines();
+  const { workOrders, updateWorkOrder } = useWorkOrders();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMachine, setEditingMachine] = useState<Machine | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [productionUpdates, setProductionUpdates] = useState<Record<string, string>>({});
+  const [updatingProduction, setUpdatingProduction] = useState<Record<string, boolean>>({});
 
   const filteredMachines = machines.filter(machine => {
     const matchesSearch = machine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -86,6 +90,50 @@ export default function MachineList() {
   const handleModalClose = () => {
     setIsModalOpen(false);
     setEditingMachine(null);
+  };
+
+  const getWorkOrderForMachine = (machine: Machine) => {
+    if (!machine.current_work_order_id) return null;
+    return workOrders.find(wo => wo.id === machine.current_work_order_id.toString());
+  };
+
+  const handleProductionInputChange = (machineId: string, value: string) => {
+    setProductionUpdates(prev => ({
+      ...prev,
+      [machineId]: value
+    }));
+  };
+
+  const handleProductionUpdate = async (machine: Machine) => {
+    const workOrder = getWorkOrderForMachine(machine);
+    if (!workOrder || !machine.current_work_order_id) return;
+
+    const newQuantity = parseInt(productionUpdates[machine.id] || '0');
+    if (isNaN(newQuantity) || newQuantity < 0 || newQuantity > workOrder.quantity_planned) {
+      alert(`Please enter a valid quantity between 0 and ${workOrder.quantity_planned}`);
+      return;
+    }
+
+    try {
+      setUpdatingProduction(prev => ({ ...prev, [machine.id]: true }));
+      
+      await updateWorkOrder(workOrder.id, {
+        quantity_completed: newQuantity
+      });
+
+      // Clear the input after successful update
+      setProductionUpdates(prev => {
+        const updated = { ...prev };
+        delete updated[machine.id];
+        return updated;
+      });
+
+    } catch (err) {
+      console.error('Failed to update production:', err);
+      alert('Failed to update production. Please try again.');
+    } finally {
+      setUpdatingProduction(prev => ({ ...prev, [machine.id]: false }));
+    }
   };
 
   return (
@@ -240,6 +288,9 @@ export default function MachineList() {
                     Last Maintenance
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Production Progress
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -247,6 +298,9 @@ export default function MachineList() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredMachines.map((machine) => {
                   const StatusIcon = statusConfig[machine.status].icon;
+                  const workOrder = getWorkOrderForMachine(machine);
+                  const isRunning = machine.status === 'running';
+                  const canUpdateProduction = isRunning && workOrder;
                   
                   return (
                     <tr key={machine.id} className="hover:bg-gray-50">
@@ -290,6 +344,48 @@ export default function MachineList() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         {new Date(machine.last_maintenance).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {canUpdateProduction ? (
+                          <div className="space-y-2">
+                            <div className="text-sm text-gray-600">
+                              {workOrder.quantity_completed} / {workOrder.quantity_planned} completed
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="number"
+                                min="0"
+                                max={workOrder.quantity_planned}
+                                value={productionUpdates[machine.id] || workOrder.quantity_completed}
+                                onChange={(e) => handleProductionInputChange(machine.id, e.target.value)}
+                                className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="Qty"
+                              />
+                              <button
+                                onClick={() => handleProductionUpdate(machine)}
+                                disabled={updatingProduction[machine.id]}
+                                className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1"
+                              >
+                                {updatingProduction[machine.id] && (
+                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                )}
+                                <span>Update</span>
+                              </button>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-1.5">
+                              <div
+                                className="bg-green-600 h-1.5 rounded-full transition-all"
+                                style={{ 
+                                  width: `${Math.min((workOrder.quantity_completed / workOrder.quantity_planned) * 100, 100)}%` 
+                                }}
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-sm text-gray-400">
+                            {machine.status === 'running' ? 'No work order' : 'Machine not running'}
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div className="flex items-center space-x-2">
