@@ -83,7 +83,7 @@ export interface Database {
           name: string
           type: string
           status: 'running' | 'idle' | 'maintenance' | 'error'
-          current_work_order: string | null
+          current_work_order: number | null
           efficiency: number
           last_maintenance: string
           location: string
@@ -95,7 +95,7 @@ export interface Database {
           name: string
           type: string
           status?: 'running' | 'idle' | 'maintenance' | 'error'
-          current_work_order?: string | null
+          current_work_order?: number | null
           efficiency?: number
           last_maintenance?: string
           location: string
@@ -107,7 +107,7 @@ export interface Database {
           name?: string
           type?: string
           status?: 'running' | 'idle' | 'maintenance' | 'error'
-          current_work_order?: string | null
+          current_work_order?: number | null
           efficiency?: number
           last_maintenance?: string
           location?: string

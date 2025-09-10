@@ -15,7 +15,7 @@ export default function MachineForm({ machine, onSubmit, onCancel, isSubmitting 
     name: '',
     type: '',
     status: 'idle' as Machine['status'],
-    current_work_order: '',
+    current_work_order_id: '',
     efficiency: 0,
     last_maintenance: '',
     location: '',
@@ -27,7 +27,7 @@ export default function MachineForm({ machine, onSubmit, onCancel, isSubmitting 
         name: machine.name,
         type: machine.type,
         status: machine.status,
-        current_work_order: machine.current_work_order || '',
+        current_work_order_id: machine.current_work_order_id?.toString() || '',
         efficiency: machine.efficiency,
         last_maintenance: machine.last_maintenance.split('T')[0],
         location: machine.location,
@@ -39,7 +39,7 @@ export default function MachineForm({ machine, onSubmit, onCancel, isSubmitting 
     e.preventDefault();
     onSubmit({
       ...formData,
-      current_work_order: formData.current_work_order || undefined,
+      current_work_order_id: formData.current_work_order_id ? parseInt(formData.current_work_order_id) : undefined,
       last_maintenance: new Date(formData.last_maintenance).toISOString(),
     });
   };
@@ -132,8 +132,8 @@ export default function MachineForm({ machine, onSubmit, onCancel, isSubmitting 
             Current Work Order
           </label>
           <select
-            name="current_work_order"
-            value={formData.current_work_order}
+            name="current_work_order_id"
+            value={formData.current_work_order_id}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
@@ -141,7 +141,7 @@ export default function MachineForm({ machine, onSubmit, onCancel, isSubmitting 
             {workOrders
               .filter(wo => wo.status === 'in_progress' || wo.status === 'pending')
               .map(wo => (
-                <option key={wo.id} value={wo.order_number}>
+                <option key={wo.id} value={wo.id}>
                   {wo.order_number} - {wo.product_name}
                 </option>
               ))}

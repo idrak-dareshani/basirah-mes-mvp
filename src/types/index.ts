@@ -18,7 +18,9 @@ export interface Machine {
   name: string;
   type: string;
   status: 'running' | 'idle' | 'maintenance' | 'error';
-  current_work_order?: string;
+  current_work_order?: string; // Display as order number in UI
+  current_work_order_id?: number; // Actual foreign key ID
+  current_work_order_product?: string; // Product name for display
   efficiency: number;
   last_maintenance: string;
   location: string;

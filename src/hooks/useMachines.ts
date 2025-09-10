@@ -7,13 +7,15 @@ type MachineSelect = Database['public']['Tables']['machines']['Row'];
 type MachineInsert = Database['public']['Tables']['machines']['Insert'];
 type MachineUpdate = Database['public']['Tables']['machines']['Update'];
 
-// Convert database row to Machine type
-const convertToMachine = (row: MachineSelect): Machine => ({
+// Convert database row to Machine type with work order details
+const convertToMachine = (row: MachineSelect & { work_orders?: any }): Machine => ({
   id: row.id.toString(),
   name: row.name,
   type: row.type,
   status: row.status,
-  current_work_order: row.current_work_order || undefined,
+  current_work_order: row.work_orders?.order_number || undefined,
+  current_work_order_id: row.current_work_order || undefined,
+  current_work_order_product: row.work_orders?.product_name || undefined,
   efficiency: row.efficiency,
   last_maintenance: row.last_maintenance,
   location: row.location,
@@ -34,7 +36,14 @@ export function useMachines() {
       
       const { data, error } = await supabase
         .from('machines')
-        .select('*')
+        .select(`
+          *,
+          work_orders (
+            id,
+            order_number,
+            product_name
+          )
+        `)
         .order('created_at', { ascending: false });
 
       console.log('📊 Machines query response:', { 
@@ -83,7 +92,7 @@ export function useMachines() {
         name: machineData.name,
         type: machineData.type,
         status: machineData.status,
-        current_work_order: machineData.current_work_order || null,
+        current_work_order: machineData.current_work_order_id || null,
         efficiency: machineData.efficiency,
         last_maintenance: machineData.last_maintenance,
         location: machineData.location,
@@ -92,7 +101,14 @@ export function useMachines() {
       const { data, error } = await supabase
         .from('machines')
         .insert(insertData)
-        .select()
+        .select(`
+          *,
+          work_orders (
+            id,
+            order_number,
+            product_name
+          )
+        `)
         .single();
 
       if (error) throw error;
@@ -118,7 +134,7 @@ export function useMachines() {
       if (updates.name !== undefined) updateData.name = updates.name;
       if (updates.type !== undefined) updateData.type = updates.type;
       if (updates.status !== undefined) updateData.status = updates.status;
-      if (updates.current_work_order !== undefined) updateData.current_work_order = updates.current_work_order || null;
+      if (updates.current_work_order_id !== undefined) updateData.current_work_order = updates.current_work_order_id || null;
       if (updates.efficiency !== undefined) updateData.efficiency = updates.efficiency;
       if (updates.last_maintenance !== undefined) updateData.last_maintenance = updates.last_maintenance;
       if (updates.location !== undefined) updateData.location = updates.location;
@@ -127,7 +143,14 @@ export function useMachines() {
         .from('machines')
         .update(updateData)
         .eq('id', parseInt(id))
-        .select()
+        .select(`
+          *,
+          work_orders (
+            id,
+            order_number,
+            product_name
+          )
+        `)
         .single();
 
       if (error) throw error;
