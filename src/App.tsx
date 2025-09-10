@@ -73,7 +73,7 @@ function App() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={toggleSidebar}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors"
               >
                 <Menu className="w-5 h-5 text-gray-600" />
               </button>
@@ -104,17 +104,17 @@ function App() {
         
         {/* Main content area */}
         <div className="flex flex-1 pt-16">
-        <Sidebar 
-          activeTab={activeTab} 
-          onTabChange={setActiveTab}
-          isCollapsed={sidebarCollapsed}
-          onToggle={toggleSidebar}
-        />
-        <main className={`flex-1 overflow-auto transition-all duration-300 ${
-          sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-0'
-        }`}>
-          {renderContent()}
-        </main>
+          <Sidebar 
+            activeTab={activeTab} 
+            onTabChange={setActiveTab}
+            isCollapsed={sidebarCollapsed}
+            onToggle={toggleSidebar}
+          />
+          <main className={`flex-1 overflow-auto transition-all duration-300 ${
+            sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
+          }`}>
+            {renderContent()}
+          </main>
         </div>
       </div>
     </AlertProvider>
