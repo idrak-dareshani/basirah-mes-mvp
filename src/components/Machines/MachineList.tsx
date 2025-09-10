@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Search, Filter, Cog, Circle, Edit, Trash2, Loader2, AlertTriangle } from 'lucide-react';
+import { Plus, Search, Filter, Cog, Circle, Edit, Trash2, Loader2, AlertTriangle, Wrench } from 'lucide-react';
 import { Machine } from '../../types';
 import { useMachines } from '../../hooks/useMachines';
 import { useWorkOrders } from '../../hooks/useWorkOrders';
@@ -25,6 +25,7 @@ export default function MachineList() {
   const [productionUpdates, setProductionUpdates] = useState<Record<string, string>>({});
   const [updatingProduction, setUpdatingProduction] = useState<Record<string, boolean>>({});
   const [updatingStatus, setUpdatingStatus] = useState<Record<string, boolean>>({});
+  const [updatingMaintenance, setUpdatingMaintenance] = useState<Record<string, boolean>>({});
 
   const filteredMachines = machines.filter(machine => {
     const matchesSearch = machine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -151,6 +152,26 @@ export default function MachineList() {
     }
   };
 
+  const handleRecordMaintenance = async (machineId: string) => {
+    if (!window.confirm('Are you sure you want to record maintenance for this machine?')) {
+      return;
+    }
+
+    try {
+      setUpdatingMaintenance(prev => ({ ...prev, [machineId]: true }));
+      
+      await updateMachine(machineId, {
+        last_maintenance: new Date().toISOString(),
+        status: 'idle'
+      });
+      
+    } catch (err) {
+      console.error('Failed to record maintenance:', err);
+      alert('Failed to record maintenance. Please try again.');
+    } finally {
+      setUpdatingMaintenance(prev => ({ ...prev, [machineId]: false }));
+    }
+  };
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -427,6 +448,18 @@ export default function MachineList() {
                             title="Edit machine"
                           >
                             <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleRecordMaintenance(machine.id)}
+                            disabled={updatingMaintenance[machine.id]}
+                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                            title="Record maintenance"
+                          >
+                            {updatingMaintenance[machine.id] ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Wrench className="w-4 h-4" />
+                            )}
                           </button>
                           <button
                             onClick={() => handleDeleteMachine(machine.id)}
