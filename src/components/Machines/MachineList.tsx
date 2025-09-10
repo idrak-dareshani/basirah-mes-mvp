@@ -24,6 +24,7 @@ export default function MachineList() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [productionUpdates, setProductionUpdates] = useState<Record<string, string>>({});
   const [updatingProduction, setUpdatingProduction] = useState<Record<string, boolean>>({});
+  const [updatingStatus, setUpdatingStatus] = useState<Record<string, boolean>>({});
 
   const filteredMachines = machines.filter(machine => {
     const matchesSearch = machine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -133,6 +134,20 @@ export default function MachineList() {
       alert('Failed to update production. Please try again.');
     } finally {
       setUpdatingProduction(prev => ({ ...prev, [machine.id]: false }));
+    }
+  };
+
+  const handleStatusUpdate = async (machineId: string, newStatus: Machine['status']) => {
+    try {
+      setUpdatingStatus(prev => ({ ...prev, [machineId]: true }));
+      
+      await updateMachine(machineId, { status: newStatus });
+      
+    } catch (err) {
+      console.error('Failed to update machine status:', err);
+      alert('Failed to update machine status. Please try again.');
+    } finally {
+      setUpdatingStatus(prev => ({ ...prev, [machineId]: false }));
     }
   };
 
@@ -311,9 +326,26 @@ export default function MachineList() {
                         <div className="text-gray-900">{machine.type}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusConfig[machine.status].bg} ${statusConfig[machine.status].color}`}>
-                          <StatusIcon className="w-3 h-3 mr-1 fill-current" />
-                          {statusConfig[machine.status].label}
+                        <div className="flex items-center space-x-2">
+                          <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusConfig[machine.status].bg} ${statusConfig[machine.status].color}`}>
+                            <StatusIcon className="w-3 h-3 mr-1 fill-current" />
+                            {statusConfig[machine.status].label}
+                          </div>
+                          <select
+                            value={machine.status}
+                            onChange={(e) => handleStatusUpdate(machine.id, e.target.value as Machine['status'])}
+                            disabled={updatingStatus[machine.id]}
+                            className="text-xs border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Change machine status"
+                          >
+                            <option value="running">Running</option>
+                            <option value="idle">Idle</option>
+                            <option value="maintenance">Maintenance</option>
+                            <option value="error">Error</option>
+                          </select>
+                          {updatingStatus[machine.id] && (
+                            <Loader2 className="w-3 h-3 animate-spin text-blue-600" />
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
