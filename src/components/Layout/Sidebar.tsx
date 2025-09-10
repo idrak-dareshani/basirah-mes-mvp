@@ -41,45 +41,19 @@ export default function Sidebar({ activeTab, onTabChange, isCollapsed, onToggle 
       
       <div className={`${
         isCollapsed ? '-translate-x-full lg:translate-x-0 lg:w-16' : 'translate-x-0 w-64'
-      } fixed lg:relative inset-y-0 left-0 z-50 bg-slate-900 text-white h-full flex flex-col transition-all duration-300 ease-in-out`}>
+      } fixed lg:relative inset-y-0 left-0 z-40 bg-slate-900 text-white h-full flex flex-col transition-all duration-300 ease-in-out`}>
         
-        <div className={`${isCollapsed ? 'lg:p-3' : 'p-6'} border-b border-slate-700 transition-all duration-300`}>
-          <div className="flex items-center justify-between">
-            <div className={`${isCollapsed ? 'lg:hidden' : ''}`}>
-              <h1 className="text-xl font-bold text-blue-400">MES Control</h1>
-              <p className="text-sm text-slate-400 mt-1">Manufacturing Execution System</p>
-            </div>
-            {/* Mobile close button */}
-            <button
-              onClick={onToggle}
-              className="lg:hidden p-2 rounded-lg hover:bg-slate-800 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-          {isCollapsed && (
-            <div className="hidden lg:flex items-center justify-center mt-4">
-              <button
-                onClick={onToggle}
-                className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors"
-                title="Expand sidebar"
-              >
-                <span className="text-sm font-bold">M</span>
-              </button>
-            </div>
-          )}
-          {!isCollapsed && (
-            <button
-              onClick={onToggle}
-              className="hidden lg:block absolute top-4 right-4 p-2 rounded-lg hover:bg-slate-800 transition-colors"
-              title="Collapse sidebar"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-          )}
+        {/* Mobile close button */}
+        <div className="lg:hidden flex justify-end p-4 border-b border-slate-700">
+          <button
+            onClick={onToggle}
+            className="p-2 rounded-lg hover:bg-slate-800 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
       
-        <nav className={`flex-1 ${isCollapsed ? 'lg:p-2' : 'p-4'} transition-all duration-300`}>
+        <nav className={`flex-1 ${isCollapsed ? 'lg:p-2 lg:pt-4' : 'p-4 pt-4'} transition-all duration-300`}>
           <ul className={`${isCollapsed ? 'lg:space-y-1' : 'space-y-2'}`}>
             {menuItems.map((item) => {
               const Icon = item.icon;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Menu } from 'lucide-react';
+import { Menu, Factory } from 'lucide-react';
 import { AlertProvider } from './context/AlertContext';
 import Sidebar from './components/Layout/Sidebar';
 import Dashboard from './components/Dashboard/Dashboard';
@@ -65,7 +65,45 @@ function App() {
 
   return (
     <AlertProvider>
-      <div className="min-h-screen bg-gray-100 flex">
+      <div className="min-h-screen bg-gray-100 flex flex-col">
+        {/* Fixed Header */}
+        <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+          <div className="flex items-center justify-between px-4 py-3">
+            {/* Left side - Toggle button and branding */}
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={toggleSidebar}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <Menu className="w-5 h-5 text-gray-600" />
+              </button>
+              
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <Factory className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-lg font-bold text-gray-900">Basirah-MES</h1>
+                  <p className="text-xs text-gray-500">Manufacturing Execution System</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Right side - User info */}
+            <div className="flex items-center space-x-3">
+              <div className="text-right">
+                <p className="text-sm font-medium text-gray-900">Admin User</p>
+                <p className="text-xs text-gray-500">admin@basirah.com</p>
+              </div>
+              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                <span className="text-sm font-medium text-white">AU</span>
+              </div>
+            </div>
+          </div>
+        </header>
+        
+        {/* Main content area */}
+        <div className="flex flex-1 pt-16">
         <Sidebar 
           activeTab={activeTab} 
           onTabChange={setActiveTab}
@@ -75,18 +113,9 @@ function App() {
         <main className={`flex-1 overflow-auto transition-all duration-300 ${
           sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-0'
         }`}>
-          {/* Mobile menu button */}
-          <div className="lg:hidden bg-white border-b border-gray-200 p-4">
-            <button
-              onClick={toggleSidebar}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <Menu className="w-5 h-5 text-gray-600" />
-            </button>
-          </div>
-          
           {renderContent()}
         </main>
+        </div>
       </div>
     </AlertProvider>
   );
