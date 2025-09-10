@@ -111,7 +111,7 @@ function App() {
             onToggle={toggleSidebar}
           />
           <main className={`flex-1 overflow-auto transition-all duration-300 ${
-            sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
+            sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-0'
           }`}>
             {renderContent()}
           </main>

@@ -86,18 +86,6 @@ export default function Sidebar({ activeTab, onTabChange, isCollapsed, onToggle 
             })}
           </ul>
         </nav>
-      
-        <div className={`${isCollapsed ? 'lg:p-2' : 'p-4'} border-t border-slate-700 transition-all duration-300`}>
-          <div className={`flex items-center ${isCollapsed ? 'lg:justify-center' : ''}`}>
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-sm font-medium">OP</span>
-            </div>
-            <div className={`ml-3 ${isCollapsed ? 'lg:hidden' : ''} transition-all duration-200`}>
-              <p className="text-sm font-medium">Operator</p>
-              <p className="text-xs text-slate-400">Day Shift</p>
-            </div>
-          </div>
-        </div>
       </div>
     </>
   );
