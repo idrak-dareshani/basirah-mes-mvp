@@ -27,7 +27,7 @@ export default function MachineForm({ machine, onSubmit, onCancel, isSubmitting 
         name: machine.name,
         type: machine.type,
         status: machine.status,
-        current_work_order_id: machine.current_work_order_id?.toString() || '',
+        current_work_order_id: machine.current_work_order_id ? machine.current_work_order_id.toString() : '',
         efficiency: machine.efficiency,
         last_maintenance: machine.last_maintenance.split('T')[0],
         location: machine.location,
