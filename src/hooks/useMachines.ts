@@ -92,7 +92,7 @@ export function useMachines() {
         name: machineData.name,
         type: machineData.type,
         status: machineData.status,
-        current_work_order: machineData.current_work_order_id || null,
+        current_work_order: machineData.current_work_order_id ?? null,
         efficiency: machineData.efficiency,
         last_maintenance: machineData.last_maintenance,
         location: machineData.location,
@@ -134,7 +134,10 @@ export function useMachines() {
       if (updates.name !== undefined) updateData.name = updates.name;
       if (updates.type !== undefined) updateData.type = updates.type;
       if (updates.status !== undefined) updateData.status = updates.status;
-      if (updates.current_work_order_id !== undefined) updateData.current_work_order = updates.current_work_order_id || null;
+      // Explicitly handle work order assignment/disassociation
+      if ('current_work_order_id' in updates) {
+        updateData.current_work_order = updates.current_work_order_id || null;
+      }
       if (updates.efficiency !== undefined) updateData.efficiency = updates.efficiency;
       if (updates.last_maintenance !== undefined) updateData.last_maintenance = updates.last_maintenance;
       if (updates.location !== undefined) updateData.location = updates.location;
