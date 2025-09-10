@@ -263,7 +263,16 @@ export default function MachineList() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {machine.current_work_order || '-'}
+                        {machine.current_work_order ? (
+                          <div>
+                            <div className="font-medium text-gray-900">{machine.current_work_order}</div>
+                            {machine.current_work_order_product && (
+                              <div className="text-xs text-gray-500">{machine.current_work_order_product}</div>
+                            )}
+                          </div>
+                        ) : (
+                          '-'
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-2">
