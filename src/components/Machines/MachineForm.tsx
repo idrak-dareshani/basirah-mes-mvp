@@ -27,7 +27,7 @@ export default function MachineForm({ machine, onSubmit, onCancel, isSubmitting 
         name: machine.name,
         type: machine.type,
         status: machine.status,
-        current_work_order_id: machine.current_work_order_id ? machine.current_work_order_id.toString() : '',
+        current_work_order_id: machine.current_work_order_id?.toString() || '',
         efficiency: machine.efficiency,
         last_maintenance: machine.last_maintenance.split('T')[0],
         location: machine.location,
@@ -141,7 +141,7 @@ export default function MachineForm({ machine, onSubmit, onCancel, isSubmitting 
             {workOrders
               .filter(wo => wo.status === 'in_progress' || wo.status === 'pending')
               .map(wo => (
-                <option key={wo.id} value={wo.id}>
+                <option key={wo.id} value={wo.id.toString()}>
                   {wo.order_number} - {wo.product_name}
                 </option>
               ))}
