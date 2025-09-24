@@ -1,4 +1,4 @@
-# basirah-mes-mvp
+# Basirah-MES (Manufacturing Execution System)
 
 A modern web application built with [Vite](https://vitejs.dev/), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), and [Tailwind CSS](https://tailwindcss.com/).
 
