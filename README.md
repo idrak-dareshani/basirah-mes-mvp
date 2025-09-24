@@ -79,4 +79,4 @@ Database migrations are managed in the [`supabase/migrations/`](supabase/migrati
 
 ## License
 
-[MIT](LICENSE)
+MIT
